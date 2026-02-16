@@ -31,7 +31,10 @@ def get_veiculo_service(
     return VeiculoService(VeiculoRepository(db), fx)
 
 
-@router.get("", response_model=Page[VeiculoResponse])
+@router.get("",
+            response_model=Page[VeiculoResponse],
+            response_model_exclude_none=True
+            )
 async def listar_veiculos(
     _user=Depends(get_current_user),
     service: VeiculoService = Depends(get_veiculo_service),
@@ -65,7 +68,10 @@ async def listar_veiculos(
     )
 
 
-@router.get("/{veiculo_id}", response_model=VeiculoResponse)
+@router.get("/{veiculo_id}",
+            response_model=VeiculoResponse,
+            response_model_exclude_none=True
+            )
 async def detalhar_veiculo(
     veiculo_id: int,
     _user=Depends(get_current_user),
@@ -75,7 +81,10 @@ async def detalhar_veiculo(
     return to_dto(v)
 
 
-@router.post("", response_model=VeiculoResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=VeiculoResponse,
+             status_code=status.HTTP_201_CREATED,
+             response_model_exclude_none=True
+             )
 async def criar_veiculo(
     payload: VeiculoCreateRequest,
     _admin=Depends(require_admin),
@@ -96,7 +105,9 @@ async def criar_veiculo(
         raise PlacaDuplicadaError()
 
 
-@router.put("/{veiculo_id}", response_model=VeiculoResponse)
+@router.put("/{veiculo_id}",
+            response_model=VeiculoResponse,
+            response_model_exclude_none=True)
 async def atualizar_veiculo_put(
     veiculo_id: int,
     payload: VeiculoUpdateRequest,
@@ -114,7 +125,9 @@ async def atualizar_veiculo_put(
     return to_dto(v)
 
 
-@router.patch("/{veiculo_id}", response_model=VeiculoResponse)
+@router.patch("/{veiculo_id}",
+              response_model=VeiculoResponse,
+              response_model_exclude_none=True)
 async def atualizar_veiculo_patch(
     veiculo_id: int,
     payload: VeiculoPatchRequest,
@@ -142,7 +155,9 @@ async def deletar_veiculo(
     return None
 
 
-@router.get("/relatorios/por-marca", response_model=List[VeiculoPorMarcaResponse])
+@router.get("/relatorios/por-marca",
+            response_model=List[VeiculoPorMarcaResponse],
+            response_model_exclude_none=True)
 async def relatorio_por_marca(
     _user=Depends(get_current_user),
     service: VeiculoService = Depends(get_veiculo_service),

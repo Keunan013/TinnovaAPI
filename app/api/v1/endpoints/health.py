@@ -18,7 +18,8 @@ router = APIRouter(tags=["health"])
 
 @router.get("/health/ready",
             status_code=HTTPStatus.OK,
-            response_model=HealthResponse)
+            response_model=HealthResponse,
+            response_model_exclude_none=True)
 async def health_ready(
     db: AsyncSession = Depends(get_db),
     redis=Depends(get_redis),

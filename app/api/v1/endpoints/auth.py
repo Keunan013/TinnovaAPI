@@ -66,7 +66,11 @@ async def _authenticate_and_issue_token(
     return TokenResponse(access_token=token)
 
 
-@router.post("/register", status_code=status.HTTP_201_CREATED, response_model=UserPublic)
+@router.post("/register",
+             status_code=status.HTTP_201_CREATED,
+             response_model=UserPublic,
+             response_model_exclude_none=True
+             )
 async def register(
     payload: RegisterRequest,
     service: UserService = Depends(get_user_service),
@@ -82,7 +86,10 @@ async def register(
         raise_api_error(status.HTTP_400_BAD_REQUEST, ErrorCode.VALIDATION_ERROR, str(e))
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login",
+             response_model=TokenResponse,
+             response_model_exclude_none=True
+             )
 async def login(
     request: Request,
     payload: LoginRequest,
@@ -105,7 +112,11 @@ async def login(
     )
 
 
-@router.post("/login/form", include_in_schema=False, response_model=TokenResponse)
+@router.post("/login/form",
+             include_in_schema=False,
+             response_model=TokenResponse,
+             response_model_exclude_none=True
+             )
 async def login_form(
     request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -142,7 +153,10 @@ async def desativar_usuario(
     return None
 
 
-@router.patch("/users/{user_id}/role", response_model=UserPublic)
+@router.patch("/users/{user_id}/role",
+              response_model=UserPublic,
+              response_model_exclude_none=True
+              )
 async def atualizar_role_usuario(
     user_id: int,
     payload: UpdateRoleRequest,
