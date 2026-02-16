@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from http import HTTPStatus
-from typing import Any
 from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,12 +16,14 @@ from app.services.fx.deps import get_fx_provider
 router = APIRouter(tags=["health"])
 
 
-@router.get("/health/ready", status_code=HTTPStatus.OK)
+@router.get("/health/ready",
+            status_code=HTTPStatus.OK,
+            response_model=HealthResponse)
 async def health_ready(
     db: AsyncSession = Depends(get_db),
     redis=Depends(get_redis),
     fx: FxProvider = Depends(get_fx_provider),
-) -> dict[str, Any]:
+) -> HealthResponse:
     db_status: HealthStatus = HealthStatus.OK
     redis_status: HealthStatus = HealthStatus.OK
 
@@ -57,4 +58,4 @@ async def health_ready(
         status=overall,
         checks=checks,
     )
-    return response.to_dict()
+    return response
