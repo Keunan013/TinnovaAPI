@@ -76,7 +76,7 @@ async def register(
     service: UserService = Depends(get_user_service),
 ) -> UserPublic:
     try:
-        user = await service.criar(email=payload.email, senha=payload.senha, role=payload.role)
+        user = await service.criar(email=payload.email, senha=payload.senha, role=payload.role.upper())
         return to_dto(user)
 
     except EmailDuplicadoError:
@@ -164,7 +164,7 @@ async def atualizar_role_usuario(
     service: UserService = Depends(get_user_service),
 ) -> UserPublic:
     try:
-        user = await service.atualizar_role(user_id=user_id, nova_role=payload.role)
+        user = await service.atualizar_role(user_id=user_id, nova_role=payload.role.upper())
         return to_dto(user)
     except UserNaoEncontradoError:
         raise_api_error(status.HTTP_404_NOT_FOUND, ErrorCode.NOT_FOUND, "Usuário não encontrado")
