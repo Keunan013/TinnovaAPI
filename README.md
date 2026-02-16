@@ -51,7 +51,7 @@ API REST para gerenciamento de veículos, desenvolvida em Python 3.12 com FastAP
 - Com Pipenv
     ```bash
     pipenv shell
-    pipenv install ou pip install
+    pipenv install
     ```
 - Com requirements
     ```bash
