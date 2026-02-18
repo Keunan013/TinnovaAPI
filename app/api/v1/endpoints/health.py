@@ -9,6 +9,7 @@ from app.core.database import get_db
 from app.core.infra import get_redis
 from app.core.schemas.health_checks import HealthChecks, HealthStatus
 from app.schemas.health_response import HealthResponse
+from app.api.api_key import require_api_key
 from app.services.fx.fx_provider import FxProvider
 from app.services.fx.deps import get_fx_provider
 
@@ -18,7 +19,9 @@ router = APIRouter(tags=["health"])
 @router.get("/health/ready",
             status_code=HTTPStatus.OK,
             response_model=HealthResponse,
-            response_model_exclude_none=True)
+            response_model_exclude_none=True,
+            dependencies=[Depends(require_api_key)]
+            )
 async def health_ready(
     db: AsyncSession = Depends(get_db),
     redis=Depends(get_redis),
