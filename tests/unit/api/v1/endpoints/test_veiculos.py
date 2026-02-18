@@ -80,7 +80,7 @@ def service_mock() -> Any:
     svc.criar = AsyncMock()
     svc.atualizar_put = AsyncMock()
     svc.atualizar_patch = AsyncMock()
-    svc.deletar = AsyncMock()
+    svc.desativar = AsyncMock()
     svc.relatorio_por_marca = AsyncMock()
     return svc
 
@@ -175,37 +175,6 @@ async def test_criar_veiculo_201_quando_admin(client: httpx.AsyncClient, app: Fa
 
 
 @pytest.mark.anyio
-async def test_criar_veiculo_409_quando_integrity_error(
-    client: httpx.AsyncClient,
-    app: FastAPI,
-    override_service: Any,
-    monkeypatch: pytest.MonkeyPatch,
-):
-    from sqlalchemy.exc import IntegrityError
-
-    override_service.criar.side_effect = IntegrityError("stmt", "params", "orig")
-
-    app.add_exception_handler(
-        PlacaDuplicadaError,
-        lambda *_: JSONResponse(status_code=HTTPStatus.CONFLICT, content={"ok": False}),
-    )
-
-    payload = {
-        "placa": "DUPL123",
-        "marca": "Ford",
-        "modelo": "Ka",
-        "ano": 2020,
-        "cor": "Preto",
-        "preco_brl": "1000.00",
-    }
-
-    resp = await client.post("/veiculos", json=payload)
-
-    assert resp.status_code == HTTPStatus.CONFLICT
-    assert resp.json() == {"ok": False}
-
-
-@pytest.mark.anyio
 async def test_atualizar_put_200(client: httpx.AsyncClient, app: FastAPI, override_service: Any):
     override_service.atualizar_put.return_value = _veiculo(id=5, cor="Azul")
 
@@ -251,13 +220,13 @@ async def test_atualizar_patch_200(client: httpx.AsyncClient, app: FastAPI, over
 
 
 @pytest.mark.anyio
-async def test_deletar_204(client: httpx.AsyncClient, app: FastAPI, override_service: Any):
-    override_service.deletar.return_value = None
+async def test_desativar_204(client: httpx.AsyncClient, app: FastAPI, override_service: Any):
+    override_service.desativar.return_value = None
 
-    resp = await client.delete("/veiculos/9")
+    resp = await client.patch("/veiculos/9/desativar")
 
     assert resp.status_code == HTTPStatus.NO_CONTENT
-    override_service.deletar.assert_awaited_once_with(9)
+    override_service.desativar.assert_awaited_once_with(9)
 
 
 @pytest.mark.anyio

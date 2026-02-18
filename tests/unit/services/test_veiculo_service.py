@@ -400,7 +400,7 @@ async def test_atualizar_patch_deve_levantar_se_repo_update_retornar_none():
 
 
 @pytest.mark.anyio
-async def test_deletar_deve_levantar_quando_nao_encontrar():
+async def test_desativar_deve_levantar_quando_nao_encontrar():
     # Arrange
     repo = AsyncMock()
     fx = AsyncMock()
@@ -410,13 +410,13 @@ async def test_deletar_deve_levantar_quando_nao_encontrar():
 
     # Act / Assert
     with pytest.raises(VeiculoNaoEncontradoError):
-        await service.deletar(999)
+        await service.desativar(999)
 
     repo.soft_delete.assert_not_awaited()
 
 
 @pytest.mark.anyio
-async def test_deletar_deve_chamar_soft_delete_quando_encontrar():
+async def test_desativar_deve_chamar_soft_delete_quando_encontrar():
     # Arrange
     repo = AsyncMock()
     fx = AsyncMock()
@@ -425,7 +425,7 @@ async def test_deletar_deve_chamar_soft_delete_quando_encontrar():
     repo.get_by_id.return_value = _veiculo(id=10)
 
     # Act
-    await service.deletar(10)
+    await service.desativar(10)
 
     # Assert
     repo.soft_delete.assert_awaited_once_with(10)
