@@ -1,7 +1,7 @@
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.129.0-009688.svg)](https://fastapi.tiangolo.com/)
 
-# Tinnova API (FastAPI)
+# Tinnova API
 
 API REST para gerenciamento de veículos, desenvolvida em Python 3.12 com FastAPI, seguindo arquitetura em camadas, autenticação JWT, rate limiting e testes automatizados.
 
@@ -111,7 +111,7 @@ Abaixo estão as rotas disponíveis na API:
 
 **PATCH** /veiculos/{veiculo_id} — Atualização parcial (ADMIN).
 
-**DELETE** /veiculos/{veiculo_id} — Soft delete (ADMIN).
+**PATCH** /veiculos/{veiculo_id}/desativar — Soft delete (ADMIN).
 
 **GET** /veiculos/relatorios/por-marca — Relatório agrupado por marca.
 

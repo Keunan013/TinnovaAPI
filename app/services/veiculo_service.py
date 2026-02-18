@@ -178,9 +178,9 @@ class VeiculoService:
             raise VeiculoNaoEncontradoError()
         return atualizado
 
-    async def deletar(self, veiculo_id: int) -> None:
+    async def desativar(self, veiculo_id: int) -> None:
         veiculo = await self.repository.get_by_id(veiculo_id)
         if not veiculo:
-            logger.warning("Veículo não encontrado para deletar. veiculo_id=%s", veiculo_id)
+            logger.warning("Veículo não encontrado para desativação. veiculo_id=%s", veiculo_id)
             raise VeiculoNaoEncontradoError()
         await self.repository.soft_delete(veiculo_id)

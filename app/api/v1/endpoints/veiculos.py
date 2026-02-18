@@ -139,13 +139,13 @@ async def atualizar_veiculo_patch(
     return to_dto(v)
 
 
-@router.delete("/{veiculo_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def deletar_veiculo(
+@router.patch("/{veiculo_id}/desativar", status_code=status.HTTP_204_NO_CONTENT)
+async def desativar_veiculo(
     veiculo_id: int,
     _admin=Depends(require_admin),
     service: VeiculoService = Depends(get_veiculo_service),
 ) -> None:
-    await service.deletar(veiculo_id)
+    await service.desativar(veiculo_id)
     return None
 
 
