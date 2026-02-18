@@ -32,7 +32,7 @@ class UserRepository:
         model = UserModel(
             email=entity.email,
             senha_hash=entity.senha_hash,
-            role=entity.role.value,
+            role=entity.role,
             ativo=True,
         )
         self.session.add(model)

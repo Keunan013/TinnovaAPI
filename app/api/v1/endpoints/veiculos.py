@@ -3,7 +3,6 @@ from typing import Optional, List
 
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
 
 from app.api.deps import get_current_user, require_admin
 from app.core.database import get_db
@@ -18,7 +17,6 @@ from app.repositories.veiculo_repository import VeiculoRepository
 from app.services.veiculo_service import VeiculoService
 from app.services.fx.fx_provider import FxProvider
 from app.services.fx.deps import get_fx_provider
-from app.exceptions.veiculo_exceptions import PlacaDuplicadaError
 
 
 router = APIRouter(prefix="/veiculos", tags=["veiculos"])
@@ -90,19 +88,15 @@ async def criar_veiculo(
     _admin=Depends(require_admin),
     service: VeiculoService = Depends(get_veiculo_service),
 ) -> VeiculoResponse:
-    try:
-        v = await service.criar(
-            placa=payload.placa,
-            marca=payload.marca,
-            modelo=payload.modelo,
-            ano=payload.ano,
-            cor=payload.cor,
-            preco_brl=payload.preco_brl,
-        )
-        return to_dto(v)
-    except IntegrityError:
-        # corrida no unique de placa
-        raise PlacaDuplicadaError()
+    v = await service.criar(
+        placa=payload.placa,
+        marca=payload.marca,
+        modelo=payload.modelo,
+        ano=payload.ano,
+        cor=payload.cor,
+        preco_brl=payload.preco_brl,
+    )
+    return to_dto(v)
 
 
 @router.put("/{veiculo_id}",
