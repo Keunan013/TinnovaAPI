@@ -1,3 +1,5 @@
+import logging
+
 from decimal import Decimal
 from typing import Optional, Dict
 
@@ -12,6 +14,8 @@ from app.exceptions.veiculo_exceptions import (
     VeiculoNaoEncontradoError,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class VeiculoService:
     def __init__(self, repository: VeiculoRepository, fx: FxProvider):
@@ -21,6 +25,7 @@ class VeiculoService:
     async def obter_por_id(self, veiculo_id: int) -> Veiculo:
         veiculo = await self.repository.get_by_id(veiculo_id)
         if not veiculo:
+            logger.warning("Veículo não encontrado. veiculo_id=%s", veiculo_id)
             raise VeiculoNaoEncontradoError()
         return veiculo
 
@@ -38,8 +43,10 @@ class VeiculoService:
         sort_dir: str = "asc",
     ) -> PageResult:
         if page < 1:
+            logger.warning("Parâmetro page inválido. page=%s", page)
             raise InvalidUpdateError("page deve ser >= 1")
         if size < 1 or size > 100:
+            logger.warning("Parâmetro size inválido. size=%s", size)
             raise InvalidUpdateError("size deve estar entre 1 e 100")
 
         if (
@@ -47,6 +54,11 @@ class VeiculoService:
             and max_preco_usd is not None
             and min_preco_usd > max_preco_usd
         ):
+            logger.warning(
+                "Faixa de preço inválida. min_preco_usd=%s max_preco_usd=%s",
+                min_preco_usd,
+                max_preco_usd,
+            )
             raise InvalidUpdateError("minPreco não pode ser maior que maxPreco")
 
         filters = VeiculoFilter(
@@ -56,7 +68,6 @@ class VeiculoService:
             min_preco_usd=min_preco_usd,
             max_preco_usd=max_preco_usd,
         )
-
         items, total = await self.repository.list(
             filters=filters,
             page=page,
@@ -81,6 +92,7 @@ class VeiculoService:
     ) -> Veiculo:
         existente = await self.repository.get_by_placa(placa)
         if existente:
+            logger.warning("Tentativa de placa duplicada. placa=%s", placa)
             raise PlacaDuplicadaError()
 
         preco_usd = await self.fx.brl_to_usd(preco_brl)
@@ -109,6 +121,7 @@ class VeiculoService:
     ) -> Veiculo:
         atual = await self.repository.get_by_id(veiculo_id)
         if not atual:
+            logger.warning("Veículo não encontrado para atualizar. veiculo_id=%s", veiculo_id)
             raise VeiculoNaoEncontradoError()
 
         preco_usd = await self.fx.brl_to_usd(preco_brl)
@@ -124,6 +137,7 @@ class VeiculoService:
             },
         )
         if not atualizado:
+            logger.warning("Veículo não encontrado depois de atualizar. veiculo_id=%s", veiculo_id)
             raise VeiculoNaoEncontradoError()
         return atualizado
 
@@ -139,6 +153,7 @@ class VeiculoService:
     ) -> Veiculo:
         atual = await self.repository.get_by_id(veiculo_id)
         if not atual:
+            logger.warning("Veículo não encontrado para atualização dos campos. veiculo_id=%s", veiculo_id)
             raise VeiculoNaoEncontradoError()
 
         fields: Dict = {}
@@ -154,16 +169,18 @@ class VeiculoService:
             fields["preco_usd"] = await self.fx.brl_to_usd(preco_brl)
 
         if not fields:
-            raise InvalidUpdateError("PATCH sem campos para atualizar")
+            logger.warning("Veículo sem campos para atualizar. veiculo_id=%s", veiculo_id)
+            raise InvalidUpdateError("Veículo sem campos para atualizar")
 
         atualizado = await self.repository.update_fields(veiculo_id, fields)
         if not atualizado:
+            logger.warning("Veículo não encontrado depois de atualização dos campos. veiculo_id=%s", veiculo_id)
             raise VeiculoNaoEncontradoError()
         return atualizado
 
-    # Soft delete
     async def deletar(self, veiculo_id: int) -> None:
         veiculo = await self.repository.get_by_id(veiculo_id)
         if not veiculo:
+            logger.warning("Veículo não encontrado para deletar. veiculo_id=%s", veiculo_id)
             raise VeiculoNaoEncontradoError()
         await self.repository.soft_delete(veiculo_id)

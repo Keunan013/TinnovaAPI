@@ -19,7 +19,6 @@ class StrongEmailValidator:
     def validate_and_normalize(email: str) -> NormalizedEmail:
         email = (email or "").strip()
         try:
-            # check_deliverability faz MX/DNS; controlado via env
             result = validate_email(
                 email,
                 check_deliverability=bool(settings.email_require_mx),

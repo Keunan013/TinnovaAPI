@@ -1,4 +1,3 @@
-# app/api/v1/endpoints/health.py
 from __future__ import annotations
 
 from http import HTTPStatus

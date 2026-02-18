@@ -95,7 +95,7 @@ class VeiculoRepository:
             await self.session.commit()
         except IntegrityError:
             await self.session.rollback()
-            raise  # services vai traduzir para 409
+            raise
         await self.session.refresh(model)
         return to_domain(model)
 
