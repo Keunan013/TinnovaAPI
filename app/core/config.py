@@ -6,6 +6,7 @@ class Settings(BaseSettings):
 
     database_url: str
     database_url_sync: str
+    auto_migrate: bool
 
     jwt_secret: str
     jwt_algorithm: str = 'HS256'
